@@ -1,23 +1,6 @@
-from dataclasses import dataclass
-from environs import Env
+import os
 
 
-@dataclass
-class FlaskConfig:
-    secret_key: str
-
-
-@dataclass
 class Config:
-    flask: FlaskConfig
-
-
-def load_config(path: str = None):
-    env = Env()
-    env.read_env(path)
-
-    return Config(
-        flask=FlaskConfig(
-            secret_key=env.str('SECRET_KEY')
-        )
-    )
+    SECRET_KEY = os.getenv('SECRET_KEY') \
+        or 'b6099382f118f397d6108665e919bba4f90b1614'
