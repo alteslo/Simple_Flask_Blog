@@ -31,6 +31,7 @@ class User(UserMixin, db.Model):
         return '<User {}>'.format(self.username)
 
 
+# TODO уточнить зачем и как работает функция
 @login.user_loader
 def load_user(id):
     return User.query.get(int(id))
