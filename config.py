@@ -1,19 +1,29 @@
 import os
+from environs import Env
 
+env = Env()
+print('-----------Читаем файл .env------------')
 basedir = os.path.abspath(os.path.dirname(__file__))
+env.read_env(os.path.join(basedir, '.env'))
 
 
-class Config:
-    SECRET_KEY = os.getenv('SECRET_KEY') \
-        or 'b6099382f118f397d6108665e919bba4f90b1614'
+class BaseConfig:
+    SECRET_KEY = env.str('SECRET_KEY')
 
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
         'sqlite:///' + os.path.join(basedir, 'app.db')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    MAIL_SERVER = env.str('MAIL_SERVER')
+    MAIL_PORT = env.int('MAIL_PORT')
+    MAIL_USE_TLS = env.int('MAIL_USE_TLS')
+    MAIL_USERNAME = env.str('MAIL_USERNAME')
+    MAIL_PASSWORD = env.str('MAIL_PASSWORD')
+    ADMINS = env.list('ADMINS')
 
-    MAIL_SERVER = os.environ.get('MAIL_SERVER')
-    MAIL_PORT = int(os.environ.get('MAIL_PORT') or 25)
-    MAIL_USE_TLS = os.environ.get('MAIL_USE_TLS') is not None
-    MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
-    MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
-    ADMINS = ['your-email@example.com']
+
+class DevelopmentConfig(BaseConfig):
+    DEBUG = True
+
+
+class ProductionConfig(BaseConfig):
+    DEBUG = False
