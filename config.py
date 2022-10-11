@@ -2,16 +2,16 @@ import os
 from environs import Env
 
 env = Env()
-print('-----------Читаем файл .env------------')
+env.read_env()
 basedir = os.path.abspath(os.path.dirname(__file__))
-env.read_env(os.path.join(basedir, '.env'))
 
 
 class BaseConfig:
-    SECRET_KEY = env.str('SECRET_KEY')
-
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
-        'sqlite:///' + os.path.join(basedir, 'app.db')
+    SECRET_KEY = env.str(name='SECRET_KEY', default='easy_key')
+    SQLALCHEMY_DATABASE_URI = env.str(
+        name='DATABASE_URL',
+        default='///'.join(['sqlite:', os.path.join(basedir, 'app.db')])
+    )
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     MAIL_SERVER = env.str('MAIL_SERVER')
     MAIL_PORT = env.int('MAIL_PORT')
@@ -21,9 +21,9 @@ class BaseConfig:
     ADMINS = env.list('ADMINS')
 
 
-class DevelopmentConfig(BaseConfig):
+class DevConfig(BaseConfig):
     DEBUG = True
 
 
-class ProductionConfig(BaseConfig):
+class ProdConfig(BaseConfig):
     DEBUG = False
