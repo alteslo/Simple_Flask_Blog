@@ -6,7 +6,6 @@ from werkzeug.security import check_password_hash, generate_password_hash
 
 from app import db, login
 
-
 followers = db.Table('followers',
                      db.Column('follower_id', db.Integer,
                                db.ForeignKey('user.id')),
