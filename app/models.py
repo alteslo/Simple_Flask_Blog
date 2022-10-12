@@ -47,12 +47,12 @@ class User(UserMixin, db.Model):
 
     def unfollow(self, user):
         if self.is_following(user):
-            self.followed.remove()
+            self.followed.remove(user)
 
     # TODO разобраться в конструкции followers.c.followed_id
     def is_following(self, user):
         return self.followed.filter(
-            followers.c.followed_id == user.id).count > 0
+            followers.c.followed_id == user.id).count() > 0
 
     def followed_posts(self):
         followed = Post.query.join(
