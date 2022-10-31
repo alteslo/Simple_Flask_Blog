@@ -21,6 +21,8 @@ class BaseConfig:
     MAIL_PASSWORD = env.str('MAIL_PASSWORD')
     ADMINS = env.list('ADMINS')
 
+    POSTS_PER_PAGE = 3
+
 
 class DevConfig(BaseConfig):
     DEBUG = True
