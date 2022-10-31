@@ -69,12 +69,13 @@ def register():
 @app.route('/user/<username>')
 @login_required
 def user(username):
+    form = EmptyForm()
     user = User.query.filter_by(username=username).first_or_404()
     posts = [
         {'author': user, 'body': 'Test post #1'},
         {'author': user, 'body': 'Test post #2'}
     ]
-    return render_template('user.html', user=user, posts=posts)
+    return render_template('user.html', user=user, posts=posts, form=form)
 
 
 @app.before_request
@@ -104,6 +105,7 @@ def edit_profile():
 @app.route('/follow/<username>', methods=['Post'])
 @login_required
 def follow(username):
+    """Подписка"""
     form = EmptyForm()
     if form.validate_on_submit():
         user = User.query.filter_by(username=username).first()
@@ -124,6 +126,7 @@ def follow(username):
 @app.route('/unfollow/<username>', methods=['POST'])
 @login_required
 def unfollow(username):
+    """Отписка"""
     form = EmptyForm()
     if form.validate_on_submit():
         user = User.query.filter_by(username=username).first()
