@@ -8,6 +8,7 @@ from flask_login import LoginManager
 from flask_mail import Mail
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
+from flask_moment import Moment
 
 db = SQLAlchemy()
 
@@ -23,6 +24,8 @@ login.login_view = 'login'
 mail = Mail(app)
 
 bootrstrap = Bootstrap(app)
+
+moment = Moment(app)
 
 from app import errors, models, routes
 
