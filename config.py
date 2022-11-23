@@ -20,6 +20,7 @@ class BaseConfig:
     MAIL_USERNAME = env.str('MAIL_USERNAME')
     MAIL_PASSWORD = env.str('MAIL_PASSWORD')
     ADMINS = env.list('ADMINS')
+    LANGUAGES = ['en', 'ru']
 
     POSTS_PER_PAGE = 3
 

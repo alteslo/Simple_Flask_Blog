@@ -8,12 +8,11 @@ from werkzeug.security import check_password_hash, generate_password_hash
 
 from app import app, db, login
 
-followers = db.Table('followers',
-                     db.Column('follower_id', db.Integer,
-                               db.ForeignKey('user.id')),
-                     db.Column('followed_id', db.Integer,
-                               db.ForeignKey('user.id'))
-                     )
+followers = db.Table(
+    'followers',
+    db.Column('follower_id', db.Integer, db.ForeignKey('user.id')),
+    db.Column('followed_id', db.Integer, db.ForeignKey('user.id'))
+)
 
 
 class User(UserMixin, db.Model):
@@ -28,8 +27,10 @@ class User(UserMixin, db.Model):
         'User', secondary=followers,
         primaryjoin=(followers.c.follower_id == id),
         secondaryjoin=(followers.c.followed_id == id),
-        backref=db.backref('followers', lazy='dynamic'),
-        lazy='dynamic')
+        backref=db.backref('followers', lazy='dynamic'), lazy='dynamic')
+
+    def __repr__(self):
+        return '<User {}>'.format(self.username)
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -71,15 +72,11 @@ class User(UserMixin, db.Model):
         try:
             id = jwt.decode(token, app.config['SECRET_KEY'],
                             algorithms=['HS256'])['reset_password']
-        except Exception:
+        except:
             return
         return User.query.get(id)
 
-    def __repr__(self):
-        return '<User {}>'.format(self.username)
 
-
-# TODO уточнить зачем и как работает функция
 @login.user_loader
 def load_user(id):
     return User.query.get(int(id))
