@@ -1,16 +1,21 @@
-from datetime import datetime, timedelta
 import unittest
-from app import app, db
-from app.models import User, Post
+from datetime import datetime, timedelta
+
+from app import create_app, db
+from app.models import Post, User
+from config import Config
+
+
+class TestConfig(Config):
+    TESTING = True
+    SQLALCHEMY_DATABASE_URI = 'sqlite://'
 
 
 class UserModelCase(unittest.TestCase):
     def setUp(self):
-        self.app = app
-        self.app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite://'
+        self.app = create_app(TestConfig)
         self.app_context = self.app.app_context()
         self.app_context.push()
-        db.init_app(self.app)
         db.create_all()
 
     def tearDown(self):
@@ -33,7 +38,6 @@ class UserModelCase(unittest.TestCase):
     def test_follow(self):
         u1 = User(username='john', email='john@example.com')
         u2 = User(username='susan', email='susan@example.com')
-
         db.session.add(u1)
         db.session.add(u2)
         db.session.commit()
@@ -41,9 +45,7 @@ class UserModelCase(unittest.TestCase):
         self.assertEqual(u1.followers.all(), [])
 
         u1.follow(u2)
-
         db.session.commit()
-
         self.assertTrue(u1.is_following(u2))
         self.assertEqual(u1.followed.count(), 1)
         self.assertEqual(u1.followed.first().username, 'susan')
@@ -51,21 +53,17 @@ class UserModelCase(unittest.TestCase):
         self.assertEqual(u2.followers.first().username, 'john')
 
         u1.unfollow(u2)
-
         db.session.commit()
-
         self.assertFalse(u1.is_following(u2))
         self.assertEqual(u1.followed.count(), 0)
         self.assertEqual(u2.followers.count(), 0)
 
     def test_follow_posts(self):
         # create four users
-
         u1 = User(username='john', email='john@example.com')
         u2 = User(username='susan', email='susan@example.com')
         u3 = User(username='mary', email='mary@example.com')
         u4 = User(username='david', email='david@example.com')
-
         db.session.add_all([u1, u2, u3, u4])
 
         # create four posts
@@ -78,7 +76,6 @@ class UserModelCase(unittest.TestCase):
                   timestamp=now + timedelta(seconds=3))
         p4 = Post(body="post from david", author=u4,
                   timestamp=now + timedelta(seconds=2))
-
         db.session.add_all([p1, p2, p3, p4])
         db.session.commit()
 
@@ -87,7 +84,6 @@ class UserModelCase(unittest.TestCase):
         u1.follow(u4)  # john follows david
         u2.follow(u3)  # susan follows mary
         u3.follow(u4)  # mary follows david
-
         db.session.commit()
 
         # check the followed posts of each user

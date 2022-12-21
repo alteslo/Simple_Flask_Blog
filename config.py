@@ -1,38 +1,22 @@
 import os
 
-from environs import Env
+from dotenv import load_dotenv
 
-env = Env()
-env.read_env()
 basedir = os.path.abspath(os.path.dirname(__file__))
+load_dotenv(os.path.join(basedir, '.env'))
 
 
-class BaseConfig:
-    SECRET_KEY = env.str(name='SECRET_KEY', default='easy_key')
-    SQLALCHEMY_DATABASE_URI = env.str(
-        name='DATABASE_URL',
-        default='///'.join(['sqlite:', os.path.join(basedir, 'app.db')])
-    )
+class Config(object):
+    SECRET_KEY = os.environ.get('SECRET_KEY') or 'you-will-never-guess'
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
+        'sqlite:///' + os.path.join(basedir, 'app.db')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    MAIL_SERVER = env.str('MAIL_SERVER')
-    MAIL_PORT = env.int('MAIL_PORT')
-    MAIL_USE_TLS = env.int('MAIL_USE_TLS')
-    MAIL_USERNAME = env.str('MAIL_USERNAME')
-    MAIL_PASSWORD = env.str('MAIL_PASSWORD')
-    ADMINS = env.list('ADMINS')
-    LANGUAGES = ['en', 'ru']
-
-    POSTS_PER_PAGE = 3
-
-
-class DevConfig(BaseConfig):
-    DEBUG = True
-
-
-class ProdConfig(BaseConfig):
-    DEBUG = False
-
-
-class TestConfig(BaseConfig):
-    TESTING = True
-    SQLALCHEMY_DATABASE_URI = 'sqlite://'
+    MAIL_SERVER = os.environ.get('MAIL_SERVER')
+    MAIL_PORT = int(os.environ.get('MAIL_PORT') or 25)
+    MAIL_USE_TLS = os.environ.get('MAIL_USE_TLS') is not None
+    MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
+    MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
+    ADMINS = ['your-email@example.com']
+    LANGUAGES = ['en', 'es']
+    MS_TRANSLATOR_KEY = os.environ.get('MS_TRANSLATOR_KEY')
+    POSTS_PER_PAGE = 25
